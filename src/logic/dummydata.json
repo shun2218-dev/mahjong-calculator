@@ -1,0 +1,27 @@
+{
+  "tehai": [
+    "2m", "3m", "4m", 
+    "5p", "6p", "7p", 
+    "1s", "1s", 
+    "8s", "8s"
+  ],
+  "fuuro": [
+    { 
+      "type": "pon", 
+      "tiles": ["chun", "chun", "chun"] 
+    }
+  ],
+  "agariHai": "8s",
+  "agariType": "ron",
+  "status": {
+    "bakaze": "ton",
+    "jikaze": "nan",
+    "dora": ["1m"],
+    "uradora": [],
+    "isRiichi": false,
+    "isIppatsu": false,
+    "isHaitei": false,
+    "isRinshan": false,
+    "isChankan": false
+  }
+}
