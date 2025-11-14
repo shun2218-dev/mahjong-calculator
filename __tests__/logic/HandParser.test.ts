@@ -98,7 +98,7 @@ describe("HandParser", () => {
             const expectedJanto = ["9m", "9m"];
             const expectedMentsuList = [
                 new Mentsu("koutsu", ["1m", "1m", "1m"], true),
-                new Mentsu("shuntsu", ["2m", "3m", "4m"], true),
+                new Mentsu("shuntsu", ["2m", "3m", "4m"], false),
                 new Mentsu("shuntsu", ["5m", "6m", "7m"], true),
                 new Mentsu("koutsu", ["8m", "8m", "8m"], true)
             ];
@@ -113,9 +113,6 @@ describe("HandParser", () => {
             expect((result as ParsedHand).mentsuList).toEqual(expectedMentsuList);    
         });
 
-        // TODO: テスト失敗
-        // kantsuの判定見直し
-        // isAnkouの判定見直し
         it('鳴き(kantsu)4面子1雀頭(スタンダード形)を正しく解析できるか', () => {
             const dummyHand = new Hand({
                 tehai: ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "8m", "9m", "9m"],
@@ -134,7 +131,7 @@ describe("HandParser", () => {
 
             const expectedJanto = ["9m", "9m"];
             const expectedMentsuList = [
-                new Mentsu("koutsu", ["1m", "1m", "1m", "1m"], false),
+                new Mentsu("kantsu", ["1m", "1m", "1m", "1m"], false),
                 new Mentsu("shuntsu", ["2m", "3m", "4m"], true),
                 new Mentsu("shuntsu", ["5m", "6m", "7m"], true),
                 new Mentsu("koutsu", ["8m", "8m", "8m"], true)
