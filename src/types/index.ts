@@ -1,13 +1,16 @@
-import type { KAZEHAI, MANZU, PINZU, SANGENPAI, SOUZU } from "@/const/TILE_TYPE";
+import type { AKADORA, KAZEHAI, MANZU, PINZU, SANGENPAI, SOUZU } from "@/const/TILE_TYPE";
+
+export type Suit = "m" | "p" | "s";
 
 export type Souzu = typeof SOUZU[number];
 export type Pinzu = typeof PINZU[number];
 export type Manzu = typeof MANZU[number];
+export type Akadora = typeof AKADORA[number];
 export type Kazehai = typeof KAZEHAI[number];
 export type Sangenpai = typeof SANGENPAI[number];
 export type Jihai = Kazehai | Sangenpai;
 
-export type Tile = Manzu | Pinzu | Souzu | Jihai;
+export type Tile = Manzu | Pinzu | Akadora | Souzu | Jihai;
 
 export type AgariType = "tsumo" | "ron";
 export type FuuroType = "chi" | "pon" | "minkan" | "ankan";
@@ -52,3 +55,13 @@ export interface CalculateRequestDto {
 }
 
 export type TehaiCounts = Map<Tile, number>;
+
+export interface Yaku {
+    id: string;
+    name: string;
+    han: number;
+    hanNaki: number;
+    isYakuman: boolean;
+}
+
+export type YakuCheckResult = Yaku | null
