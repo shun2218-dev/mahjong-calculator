@@ -16,6 +16,7 @@ export type AgariType = "tsumo" | "ron";
 export type FuuroType = "chi" | "pon" | "minkan" | "ankan";
 export type MachiType = "ryanmen" | "kanchan" | "penchan" | "tanki" | "shanpon";
 export type AgariForm = "standard" | "chitoitsu" | "kokushi";
+export type MentsuType = "shuntsu" | "koutsu" | "kantsu";
 
 export interface FuuroMeld {
     type: FuuroType;
