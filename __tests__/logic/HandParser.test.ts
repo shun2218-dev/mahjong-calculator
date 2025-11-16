@@ -328,7 +328,7 @@ describe("HandParser", () => {
 
     it("アガリ形でない場合にエラーを返す", () => {
         const dummyHand = new Hand({
-            tehai: ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "1p", "1p", "1p", "2s"],
+            tehai: ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "1p", "1p", "2p", "2s"],
             fuuro: [],
             agariHai: "2s",
             agariType: "tsumo",
