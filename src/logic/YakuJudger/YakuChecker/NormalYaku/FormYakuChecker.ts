@@ -61,7 +61,7 @@ export class FormYakuChecker {
     public checkShousangen(parsedHand: ParsedHand): YakuCheckResult {
         const janto = parsedHand.janto[0];
 
-        if (SANGENPAI_SET.has(janto)) return null;
+        if (!SANGENPAI_SET.has(janto)) return null;
 
         const sangenKoutsuCount = parsedHand.mentsuList.filter(mentsu => {
             const tile = mentsu.tiles[0];
