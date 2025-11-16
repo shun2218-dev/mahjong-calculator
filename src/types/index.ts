@@ -66,3 +66,8 @@ export interface Yaku {
 }
 
 export type YakuCheckResult = Yaku | null
+
+export type ScoreTier = {
+    name: string;
+    kihonten: number;
+}
