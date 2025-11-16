@@ -9,8 +9,8 @@ type KokushiCheckResult = {
     is13MenMachi: boolean;
 }
 
-type ChitoitsuCheckResult = {
-    isChitoitsu: boolean;
+type ChiitoitsuCheckResult = {
+    isChiitoitsu: boolean;
     pairs?: Tile[][];
 }
 
@@ -30,9 +30,9 @@ export class HandParser {
             return ParsedHand.createKokushi(kokushiResult.is13MenMachi)
         }
 
-        const chitoitsuResult = this.checkChitoitsu(allTileCounts);
-        if (chitoitsuResult.isChitoitsu && chitoitsuResult.pairs) {
-            return ParsedHand.createChitoitsu(chitoitsuResult.pairs);
+        const chiitoitsuResult = this.checkChiitoitsu(allTileCounts);
+        if (chiitoitsuResult.isChiitoitsu && chiitoitsuResult.pairs) {
+            return ParsedHand.createChiitoitsu(chiitoitsuResult.pairs);
         }
 
         const menzenCounts = new Map(allTileCounts);
@@ -120,7 +120,7 @@ export class HandParser {
         return { isKokushi: true, is13MenMachi: is13Men };
     }
 
-    private checkChitoitsu(tehaiCounts: TehaiCounts): ChitoitsuCheckResult {
+    private checkChiitoitsu(tehaiCounts: TehaiCounts): ChiitoitsuCheckResult {
         let pairCount = 0;
         const pairs: Tile[][] = [];
         for (const [tile, count] of tehaiCounts.entries()) {
@@ -134,10 +134,10 @@ export class HandParser {
                 continue;
             }
             
-            return { isChitoitsu: false, pairs: undefined }
+            return { isChiitoitsu: false, pairs: undefined }
         }
 
-        return { isChitoitsu: pairCount === 7, pairs };
+        return { isChiitoitsu: pairCount === 7, pairs };
     }
 
     private checkStandard(tehaiCounts: TehaiCounts, fuuroList: FuuroMeld[]): StandardCheckResult | null {

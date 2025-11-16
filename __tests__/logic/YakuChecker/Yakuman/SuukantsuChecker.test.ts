@@ -41,7 +41,7 @@ describe('SuukantsuChecker', () => {
       });
     
       it('❌ 不成立：スタンダード形ではない場合 (七対子)', () => {
-        const dummyParsedHand = createDummyParsedHand({ agariForm: "chitoitsu" });
+        const dummyParsedHand = createDummyParsedHand({ agariForm: "chiitoitsu" });
     
         const result = checker.check(dummyParsedHand);
     
