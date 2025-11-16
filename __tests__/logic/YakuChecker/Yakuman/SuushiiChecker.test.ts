@@ -26,6 +26,23 @@ describe('SuushiiChecker', () => {
       expect(result).toEqual(YAKU_LIST.DAISUUSHI);
     });
 
+    
+    it('❌ 不成立：スタンダード形ではない場合 (七対子)', () => {
+        const dummyParsedHand = createDummyParsedHand({ agariForm: "chitoitsu" });
+
+        const result = checker.checkDaisuushi(dummyParsedHand);
+
+        expect(result).toBeNull();
+    });
+
+    it('❌ 不成立：スタンダード形ではない場合 (国士無双)', () => {
+        const dummyParsedHand = createDummyParsedHand({ agariForm: "kokushi" });
+
+        const result = checker.checkDaisuushi(dummyParsedHand);
+
+        expect(result).toBeNull();
+    });
+
     it('❌ 不成立：小四喜の場合（雀頭が風牌）', () => {
       const mentsuList = [
         new Mentsu('koutsu', ['ton', 'ton', 'ton'], false),
@@ -54,6 +71,37 @@ describe('SuushiiChecker', () => {
       const result = checker.checkShousuushi(dummyParsedHand);
 
       expect(result).toEqual(YAKU_LIST.SHOUSUUSHI);
+    });
+
+    it('❌ 不成立：風牌刻子が2つの場合', () => {
+      const mentsuList = [
+        new Mentsu('koutsu', ['ton', 'ton', 'ton'], false),
+        new Mentsu('koutsu', ['nan', 'nan', 'nan'], true),
+        new Mentsu('koutsu', ['2s', '2s', '2s'], false),
+        new Mentsu('shuntsu', ['1m', '2m', '3m'], true),
+      ];
+      const dummyParsedHand = createDummyParsedHand({ mentsuList, janto: ['pei', 'pei'] });
+
+      const result = checker.checkShousuushi(dummyParsedHand);
+
+      expect(result).toBeNull();
+    });
+
+    
+    it('❌ 不成立：スタンダード形ではない場合 (七対子)', () => {
+        const dummyParsedHand = createDummyParsedHand({ agariForm: "chitoitsu" });
+
+        const result = checker.checkShousuushi(dummyParsedHand);
+
+        expect(result).toBeNull();
+    });
+
+    it('❌ 不成立：スタンダード形ではない場合 (国士無双)', () => {
+        const dummyParsedHand = createDummyParsedHand({ agariForm: "kokushi" });
+
+        const result = checker.checkShousuushi(dummyParsedHand);
+
+        expect(result).toBeNull();
     });
 
     it('❌ 不成立：雀頭が風牌ではない場合', () => {
