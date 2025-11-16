@@ -6,8 +6,8 @@ export class ParsedHand {
     public readonly mentsuList: Mentsu[];
     public readonly machiType: MachiType | null;
     public readonly agariForm: AgariForm;
-    public readonly pairs: Tile[][];
-    public readonly is13MenMachi: boolean;
+    public readonly pairs?: Tile[][];
+    public readonly is13MenMachi?: boolean;
 
     private constructor(props: Partial<ParsedHand>) {
         this.janto = props.janto ?? [];
