@@ -27,9 +27,9 @@ export class ParsedHand {
         });
     }
 
-    public static createChitoitsu(pairs: Tile[][]): ParsedHand {
+    public static createChiitoitsu(pairs: Tile[][]): ParsedHand {
         return new ParsedHand({
-            agariForm: "chitoitsu",
+            agariForm: "chiitoitsu",
             pairs
         });
     }

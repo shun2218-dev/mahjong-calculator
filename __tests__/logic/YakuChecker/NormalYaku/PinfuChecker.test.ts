@@ -50,7 +50,7 @@ describe("PinfuChecker", () => {
         });
     
         it("❌ 不成立：アガリ形が七対子の場合 (スタンダード形ではない)", () => {
-            const dummyParsedHand = createDummyParsedHand({ agariForm: "chitoitsu" });
+            const dummyParsedHand = createDummyParsedHand({ agariForm: "chiitoitsu" });
             const dummyHand = createDummyHand();
     
             const result = checker.check(dummyParsedHand, dummyHand);

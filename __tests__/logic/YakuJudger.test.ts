@@ -640,7 +640,7 @@ describe('YakuJudger', () => {
         agariHai: "hatsu",
     });
 
-    const dummyParsedHand = createDummyParsedHand({ agariForm: "chitoitsu" });
+    const dummyParsedHand = createDummyParsedHand({ agariForm: "chiitoitsu" });
 
     const result = judger.judge(dummyParsedHand, dummyHand);
 
