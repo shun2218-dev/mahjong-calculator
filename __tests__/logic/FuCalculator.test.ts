@@ -12,7 +12,7 @@ describe("FuCalculator", () => {
     });
 
     it("⭕️ 特殊計算：七対子 (chiitoitsu) は 25符 を返す", () => {
-        const dummyParsedHand = createDummyParsedHand({ agariForm: "chitoitsu" });
+        const dummyParsedHand = createDummyParsedHand({ agariForm: "chiitoitsu" });
         const dummyHand = createDummyHand();
         const yakuResult = createDummyYakuResult([YAKU_LIST.CHIITOITSU]);
 

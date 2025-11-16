@@ -173,7 +173,7 @@ export class YakuJudger {
             results.push(this.ryanpeikouChecker.check(parsedHand, hand));
         }
 
-        if (parsedHand.agariForm === "chitoitsu") {
+        if (parsedHand.agariForm === "chiitoitsu") {
             results.push(YAKU_LIST.CHIITOITSU);
         }
 

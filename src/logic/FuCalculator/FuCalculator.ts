@@ -7,7 +7,7 @@ import { SANGENPAI_SET } from "@/const/TILE_TYPE";
 
 export class FuCalculator {
     public calculate(parsedHand: ParsedHand, hand: Hand, yakuResult: YakuResult): number {
-        if (parsedHand.agariForm === "chitoitsu") return 25;
+        if (parsedHand.agariForm === "chiitoitsu") return 25;
 
         const hasPinfu = yakuResult.yakuList.some(yaku => yaku.id === YAKU_LIST.PINFU.id);
         if (hasPinfu) {

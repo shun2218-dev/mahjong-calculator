@@ -276,7 +276,7 @@ describe("HandParser", () => {
 
         expect(result).not.toBeInstanceOf(Error);
         expect(result).toBeInstanceOf(ParsedHand);
-        expect((result as ParsedHand).agariForm).toBe("chitoitsu");
+        expect((result as ParsedHand).agariForm).toBe("chiitoitsu");
         expect((result as ParsedHand).pairs).toHaveLength(7);        
     });
 
