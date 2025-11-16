@@ -21,25 +21,25 @@ type StandardCheckResult = {
 
 export class HandParser {
     public parse(hand: Hand): ParsedHand | Error {
-        const tehai = hand.tehai;
         const agariHai = hand.agariHai;
         
-        const tehaiCounts = this.convertHandToCounts(tehai);
-        const allTiles = this.convertHandToCounts(hand.allTiles);
+        const allTileCounts = this.convertHandToCounts(hand.allTiles);
         
-        const kokushiResult = this.checkKokushi(allTiles, agariHai);
+        const kokushiResult = this.checkKokushi(allTileCounts, agariHai);
         if (kokushiResult.isKokushi) {
             return ParsedHand.createKokushi(kokushiResult.is13MenMachi)
         }
 
-        const chitoitsuResult = this.checkChitoitsu(tehaiCounts, agariHai);
+        const chitoitsuResult = this.checkChitoitsu(allTileCounts);
         if (chitoitsuResult.isChitoitsu && chitoitsuResult.pairs) {
             return ParsedHand.createChitoitsu(chitoitsuResult.pairs);
         }
 
-        const menzenCounts = hand.tehaiCounts
-        if (hand.agariType === "ron") {
-            menzenCounts.set(agariHai, (menzenCounts.get(agariHai) ?? 0) + 1);
+        const menzenCounts = new Map(allTileCounts);
+        for (const meld of hand.fuuro) {
+            for (const tile of meld.tiles) {
+                menzenCounts.set(tile, (menzenCounts.get(tile) ?? 0) - 1);
+            }
         }
 
         const standardResult = this.checkStandard(menzenCounts, hand.fuuro);
@@ -77,7 +77,7 @@ export class HandParser {
         for (const tile of tehai) {
             counts.set(tile, (counts.get(tile) ?? 0) + 1);
         }
-        return counts;    
+        return counts;
     }
 
     private checkKokushi(allTileCounts: TehaiCounts, agariHai: Tile): KokushiCheckResult {
@@ -120,21 +120,21 @@ export class HandParser {
         return { isKokushi: true, is13MenMachi: is13Men };
     }
 
-    private checkChitoitsu(tehaiCounts: TehaiCounts, agariHai: Tile): ChitoitsuCheckResult {
+    private checkChitoitsu(tehaiCounts: TehaiCounts): ChitoitsuCheckResult {
         let pairCount = 0;
         const pairs: Tile[][] = [];
         for (const [tile, count] of tehaiCounts.entries()) {
+            if (count === 0) {
+                continue;
+            }
+
             if (count === 2) {
                 pairCount++;
                 pairs.push([tile, tile]);
                 continue;
             }
-            if (count === 1 && tile === agariHai) {
-                pairCount++;
-                pairs.push([tile, tile]);
-            }
-
-            return { isChitoitsu: false, pairs: undefined  };
+            
+            return { isChitoitsu: false, pairs: undefined }
         }
 
         return { isChitoitsu: pairCount === 7, pairs };
@@ -208,29 +208,28 @@ export class HandParser {
         const suit = firstTile.charAt(1);
         if (suit === "m" || suit === "p" || suit === "s") {
             const rank = parseInt(firstTile.charAt(0));
-            if (rank > 7) {
-                return null;                
-            }
-            const secondTile = `${rank + 1}${suit}` as Tile;
-            const thirdTile = `${rank + 2}${suit}` as Tile;
-            if (tehaiCounts.get(secondTile) !== undefined && tehaiCounts.get(thirdTile) !== undefined) {
-                const secondCount = tehaiCounts.get(secondTile) ?? 0;
-                const thirdCount = tehaiCounts.get(thirdTile) ?? 0;
-                if ((tehaiCounts.get(firstTile) ?? 0) > 0 && secondCount > 0 && thirdCount > 0) {
-                    // Form a shuntsu
-                    tehaiCounts.set(firstTile, (tehaiCounts.get(firstTile) ?? 0) - 1);
-                    tehaiCounts.set(secondTile, secondCount - 1);
-                    tehaiCounts.set(thirdTile, thirdCount - 1);
-                    const result = this.findMentsuRecursive(tehaiCounts, mentsuNeeded - 1);
-                    if (result !== null) {
-                        return [new Mentsu("shuntsu", [firstTile, secondTile, thirdTile], true), ...result];
+            if (rank <= 7) {
+                const secondTile = `${rank + 1}${suit}` as Tile;
+                const thirdTile = `${rank + 2}${suit}` as Tile;
+                if (tehaiCounts.get(secondTile) !== undefined && tehaiCounts.get(thirdTile) !== undefined) {
+                    const secondCount = tehaiCounts.get(secondTile) ?? 0;
+                    const thirdCount = tehaiCounts.get(thirdTile) ?? 0;
+                    if ((tehaiCounts.get(firstTile) ?? 0) > 0 && secondCount > 0 && thirdCount > 0) {
+                        // Form a shuntsu
+                        tehaiCounts.set(firstTile, (tehaiCounts.get(firstTile) ?? 0) - 1);
+                        tehaiCounts.set(secondTile, secondCount - 1);
+                        tehaiCounts.set(thirdTile, thirdCount - 1);
+                        const result = this.findMentsuRecursive(tehaiCounts, mentsuNeeded - 1);
+                        if (result !== null) {
+                            return [new Mentsu("shuntsu", [firstTile, secondTile, thirdTile], true), ...result];
+                        }
+                        // Backtrack
+                        tehaiCounts.set(firstTile, (tehaiCounts.get(firstTile) ?? 0) + 1);
+                        tehaiCounts.set(secondTile, (tehaiCounts.get(secondTile) ?? 0) + 1);
+                        tehaiCounts.set(thirdTile, (tehaiCounts.get(thirdTile) ?? 0) + 1);
                     }
-                    // Backtrack
-                    tehaiCounts.set(firstTile, (tehaiCounts.get(firstTile) ?? 0) + 1);
-                    tehaiCounts.set(secondTile, (tehaiCounts.get(secondTile) ?? 0) + 1);
-                    tehaiCounts.set(thirdTile, (tehaiCounts.get(thirdTile) ?? 0) + 1);
                 }
-            }
+            }            
         }
         return null;
     }
