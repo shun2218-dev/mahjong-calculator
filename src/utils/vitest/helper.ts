@@ -1,7 +1,8 @@
 import { Hand } from "@/logic/Hand/Hand";
 import { Mentsu } from "@/logic/Mentsu/Mentsu";
 import type { ParsedHand } from "@/logic/ParsedHand/ParsedHand";
-import type { CalculateRequestDto } from "@/types";
+import { YakuResult } from "@/logic/YakuResult/YakuResult";
+import type { CalculateRequestDto, Yaku } from "@/types";
 
 export const createDummyParsedHand = (overrides: Partial<ParsedHand> = {}): ParsedHand => {
     const defaultParsedHand: ParsedHand = {
@@ -50,3 +51,12 @@ export const createDummyHand = (overrides: Partial<Omit<CalculateRequestDto, "st
 
     return new Hand(dto);
 };
+
+export const createDummyYakuResult = (yakuList: Yaku[]): YakuResult => {
+    const yakuHan = yakuList.reduce((sum, yaku) => {
+        return sum + yaku.han;
+    }, 0);
+
+    const doraHan = 0;
+    return new YakuResult(yakuHan, doraHan, yakuList);
+}
