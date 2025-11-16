@@ -52,11 +52,10 @@ export const createDummyHand = (overrides: Partial<Omit<CalculateRequestDto, "st
     return new Hand(dto);
 };
 
-export const createDummyYakuResult = (yakuList: Yaku[]): YakuResult => {
+export const createDummyYakuResult = (yakuList: Yaku[], doraHan: number = 0): YakuResult => {
     const yakuHan = yakuList.reduce((sum, yaku) => {
         return sum + yaku.han;
     }, 0);
 
-    const doraHan = 0;
     return new YakuResult(yakuHan, doraHan, yakuList);
 }
