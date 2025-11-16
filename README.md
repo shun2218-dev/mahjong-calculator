@@ -34,3 +34,57 @@ TypeScriptで構築された、麻雀の点数計算（符計算・翻計算）�
 ## プロジェクト構成
 
 ロジックは「関心の分離」と「高凝集」の原則に基づき、各クラスに分割されています。
+
+## APIエンドポイント (予定)
+
+このロジックは `MahjongScoreService` を通じて、API（NestJSなど）として公開されることを想定しています。
+
+### `POST /calculate`
+
+アガリ情報をJSON形式で送信し、計算された点数結果を受け取ります。
+
+---
+
+### 📥 入力 (Request) の例
+
+**`CalculateRequestDto`** 型のJSONデータです。
+（例：メンゼン・ピンフ・ツモ・ドラ1 の手）
+
+```json
+{
+  "tehai": [
+    "1m", "2m", "3m", "4m", "5m", "6m", 
+    "7p", "8p", "9p", 
+    "1s", "1s", "2s", "3s"
+  ],
+  "agariHai": "4s",
+  "agariType": "tsumo", // "tsumo" or "ron"
+  "fuuro": [], // ex) { type: "pon", tiles: ["1m", "1m", "1m"] }
+  "status": {
+    "bakaze": "ton",
+    "jikaze": "nan",
+    "isRiichi": false, // optional
+    "isIppatsu": false, // optional
+    "isHaitei": false, // optional
+    "isRinshan": false, // optional
+    "isChankan": false, // optional
+    "dora": ["2s"],
+    "uradora": []
+  }
+}
+```
+### 📤 出力 (Response) の例
+PointResult 型のJSONデータが返されます。 （上記インプットに対する計算結果）
+* 役: 門前清自摸和 (1翻) + 平和 (1翻)
+* ドラ: ドラ表示牌 2s → ドラ 3s が1枚
+* 合計: 3翻
+* 符: 20符 (ピンフ・ツモの例外ルール)
+* 点数: 20符3翻（子・ツモ） → 700点 / 1300点
+```json
+{
+  "total": 2700,
+  "oya": 1300,
+  "ko": 700,
+  "name": "20符3翻"
+}
+```
