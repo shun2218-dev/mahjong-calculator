@@ -27,13 +27,53 @@ export class MahjongScoreService {
 
             const yakuResult = this.yakuJudger.judge(parsedHand, hand);
 
+            console.log(yakuResult.yakuList);
+
             const fu = this.fuCalculator.calculate(parsedHand, hand, yakuResult);
 
             const pointResult = this.pointCalculator.calculate(yakuResult, fu, hand);
 
-            return pointResult;
+            return this.applyBonus(pointResult, hand);
         } catch(e: unknown) {
             return e as Error;
         }
+    }
+
+    private applyBonus(pointResult: PointResult, hand: Hand): PointResult {
+        pointResult = this.applyRiichiStickBonus(pointResult, hand);
+        pointResult = this.applyHonbaBonus(pointResult, hand);
+
+        return pointResult;
+    }
+
+    private applyRiichiStickBonus(pointResult: PointResult, hand: Hand): PointResult {
+        const riichiSticks = hand.status.riichiSticks || 0;
+        if (riichiSticks === 0) return pointResult;
+
+        pointResult.total += riichiSticks * 1000;
+
+        return pointResult;
+    }
+
+    private applyHonbaBonus(pointResult: PointResult, hand: Hand): PointResult {
+        const honba = hand.status.honba || 0;
+        if (honba === 0) return pointResult;
+
+        if (hand.isTsumo) {
+            const honbaBonus = honba * 100;
+            pointResult.total += (honbaBonus * 3);
+
+            if (hand.isOya) {
+                pointResult.ko += honbaBonus;
+            } else {
+                pointResult.oya += honbaBonus;
+                pointResult.ko += honbaBonus;
+            }
+        } else {
+            const honbaBonus = honba * 300;
+            pointResult.total += honbaBonus;
+        }
+
+        return pointResult;
     }
 }

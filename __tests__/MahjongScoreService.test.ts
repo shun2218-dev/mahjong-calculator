@@ -135,6 +135,40 @@ describe('MahjongScoreService Integration Test', () => {
     expect(point.name).toBe('国士無双13面待ち');
   });
 
+  it('⭕️ 統合テスト：ボーナス点（本場・リー棒）が加算されるケース', () => {
+    const dto: CalculateRequestDto = {
+      tehai: ['2m', '3m', '4m', '5m', '6m', '7m', '2p', '3p', '4p', '5p', '6p', '7p', '8s'],
+      agariHai: '8s',
+      agariType: 'ron',
+      fuuro: [],
+      status: {
+        bakaze: 'ton',
+        jikaze: 'nan',
+        honba: 2,
+        riichiSticks: 1,
+        dora: [],
+        uradora: []        
+      }
+    };
+
+    const result = service.calculateScore(dto);
+
+    expect(result).not.toBeInstanceOf(Error);
+
+    const point = result as PointResult;
+
+    // 役: 断么九 = 4翻
+    // kihonten = 40 * 2^(1+2) = 320
+    // 基本点 = roundUp(320 * 4) = 1300点
+    // リー棒 = 1 * 1000 = 1000点
+    // 本場 = 2 * 300 = 600点
+    // 合計 = 1300 + 1000 + 600 = 2900点
+    expect(point.name).toBe('40符1翻');
+    expect(point.total).toBe(2900);
+    expect(point.oya).toBe(0);
+    expect(point.ko).toBe(0);
+  });
+
   it('❌ エラー：アガリ形ではない場合', () => {
     const dto: CalculateRequestDto = {
       tehai: ['1m', '1m', '2p', '3p', '4p', '5s', '6s', '7s', '8p', '8p'],

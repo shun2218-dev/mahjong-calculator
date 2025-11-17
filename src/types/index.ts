@@ -36,6 +36,12 @@ export interface GameStatus {
     /** 裏ドラ */
     uradora: Tile[];
 
+    /** 本場 */
+    honba?: number;
+
+    /** リーチ棒 */
+    riichiSticks?: number;
+
     // --- 特殊役フラグ ---
     isRiichi?: boolean;
     isIppatsu?: boolean;
