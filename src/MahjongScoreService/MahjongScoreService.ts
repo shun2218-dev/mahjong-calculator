@@ -27,8 +27,6 @@ export class MahjongScoreService {
 
             const yakuResult = this.yakuJudger.judge(parsedHand, hand);
 
-            console.log(yakuResult.yakuList);
-
             const fu = this.fuCalculator.calculate(parsedHand, hand, yakuResult);
 
             const pointResult = this.pointCalculator.calculate(yakuResult, fu, hand);
