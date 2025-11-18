@@ -58,18 +58,20 @@ TypeScriptで構築された、麻雀の点数計算（符計算・翻計算）�
     "1s", "1s", "2s", "3s"
   ],
   "agariHai": "4s",
-  "agariType": "tsumo", // "tsumo" or "ron"
-  "fuuro": [], // ex) { type: "pon", tiles: ["1m", "1m", "1m"] }
+  "agariType": "tsumo", "tsumo" or "ron"
+  "fuuro": [], ex) { type: "pon", tiles: ["1m", "1m", "1m"] }
   "status": {
     "bakaze": "ton",
     "jikaze": "nan",
-    "isRiichi": false, // optional
-    "isIppatsu": false, // optional
-    "isHaitei": false, // optional
-    "isRinshan": false, // optional
-    "isChankan": false, // optional
+    "isRiichi": false, optional
+    "isIppatsu": false, optional
+    "isHaitei": false, optional
+    "isRinshan": false, optional
+    "isChankan": false, optional
     "dora": ["2s"],
-    "uradora": []
+    "uradora": [],
+    "honba": 0,
+    "riichiSticks": 0,
   }
 }
 ```
