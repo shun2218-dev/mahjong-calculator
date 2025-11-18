@@ -50,7 +50,7 @@ TypeScriptで構築された、麻雀の点数計算（符計算・翻計算）�
 **`CalculateRequestDto`** 型のJSONデータです。
 （例：メンゼン・ピンフ・ツモ・ドラ1 の手）
 
-```json
+```jsonc
 {
   "tehai": [
     "1m", "2m", "3m", "4m", "5m", "6m", 
@@ -58,16 +58,16 @@ TypeScriptで構築された、麻雀の点数計算（符計算・翻計算）�
     "1s", "1s", "2s", "3s"
   ],
   "agariHai": "4s",
-  "agariType": "tsumo", "tsumo" or "ron"
-  "fuuro": [], ex) { type: "pon", tiles: ["1m", "1m", "1m"] }
+  "agariType": "tsumo", // "tsumo" or "ron"
+  "fuuro": [], // ex) { type: "pon", tiles: ["1m", "1m", "1m"] }
   "status": {
     "bakaze": "ton",
     "jikaze": "nan",
-    "isRiichi": false, optional
-    "isIppatsu": false, optional
-    "isHaitei": false, optional
-    "isRinshan": false, optional
-    "isChankan": false, optional
+    "isRiichi": false, // optional
+    "isIppatsu": false, // optional
+    "isHaitei": false, // optional
+    "isRinshan": false, // optional
+    "isChankan": false, // optional
     "dora": ["2s"],
     "uradora": [],
     "honba": 0,
@@ -82,7 +82,7 @@ PointResult 型のJSONデータが返されます。 （上記インプットに
 * 合計: 3翻
 * 符: 20符 (ピンフ・ツモの例外ルール)
 * 点数: 20符3翻（子・ツモ） → 700点 / 1300点
-```json
+```jsonc
 {
   "total": 2700,
   "oya": 1300,
