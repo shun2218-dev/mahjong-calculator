@@ -5,72 +5,83 @@ import type { ParsedHand } from "@/logic/ParsedHand/ParsedHand";
 import type { Tile, Yaku, YakuCheckResult } from "@/types";
 
 export class FormYakuChecker {
-    private readonly SANGENPAI_DATA: [Tile, Yaku][] = [
-        ["haku", YAKU_LIST.YAKUHAI_HAKU],
-        ["hatsu", YAKU_LIST.YAKUHAI_HATSU],
-        ["chun", YAKU_LIST.YAKUHAI_CHUN]
-    ]
-    private readonly SANGENPAI_MAP: Map<Tile,  Yaku> = new Map(this.SANGENPAI_DATA);
+	private readonly SANGENPAI_DATA: [Tile, Yaku][] = [
+		["haku", YAKU_LIST.YAKUHAI_HAKU],
+		["hatsu", YAKU_LIST.YAKUHAI_HATSU],
+		["chun", YAKU_LIST.YAKUHAI_CHUN],
+	];
+	private readonly SANGENPAI_MAP: Map<Tile, Yaku> = new Map(
+		this.SANGENPAI_DATA,
+	);
 
-    public checkTanyao(hand: Hand): YakuCheckResult {
-        const hasYaochuuhai = hand.allTiles.some(tile => YAOCHUHAI_SET.has(tile))
-        if (hasYaochuuhai) return null;
+	public checkTanyao(hand: Hand): YakuCheckResult {
+		const hasYaochuuhai = hand.allTiles.some((tile) => YAOCHUHAI_SET.has(tile));
+		if (hasYaochuuhai) return null;
 
-        return YAKU_LIST.TANYAOCHUU;
-    }
+		return YAKU_LIST.TANYAOCHUU;
+	}
 
-    public checkYakuhai(parsedHand: ParsedHand, hand: Hand): Yaku[] {
-        const yakuList: Yaku[] = [];
+	public checkYakuhai(parsedHand: ParsedHand, hand: Hand): Yaku[] {
+		const yakuList: Yaku[] = [];
 
-        const jikaze = hand.status.jikaze;
-        const bakaze = hand.status.bakaze;
-        const allKoutsu = parsedHand.mentsuList.filter(mentsu => mentsu.type === "koutsu" || mentsu.type === "kantsu");        
+		const jikaze = hand.status.jikaze;
+		const bakaze = hand.status.bakaze;
+		const allKoutsu = parsedHand.mentsuList.filter(
+			(mentsu) => mentsu.type === "koutsu" || mentsu.type === "kantsu",
+		);
 
-        for (const koutsu of allKoutsu) {
-            const tile = koutsu.tiles[0];
+		for (const koutsu of allKoutsu) {
+			const tile = koutsu.tiles[0];
 
-            if (this.SANGENPAI_MAP.has(tile)) {
-                yakuList.push(this.SANGENPAI_MAP.get(tile)!);
-                continue;
-            }
-            
-            if (tile === bakaze) {
-                yakuList.push(YAKU_LIST.YAKUHAI_BAKAZE);
-            }
+			if (this.SANGENPAI_MAP.has(tile)) {
+				// biome-ignore lint/style/noNonNullAssertion: Since the possibility of null/undefined has already been checked in `SANGENPAI_MAP.has(tile)`.
+				yakuList.push(this.SANGENPAI_MAP.get(tile)!);
+				continue;
+			}
 
-            if (tile === jikaze) {
-                yakuList.push(YAKU_LIST.YAKUHAI_JIKAZE);
-            }
-        }
+			if (tile === bakaze) {
+				yakuList.push(YAKU_LIST.YAKUHAI_BAKAZE);
+			}
 
-        return yakuList
-    }
+			if (tile === jikaze) {
+				yakuList.push(YAKU_LIST.YAKUHAI_JIKAZE);
+			}
+		}
 
-    public checkToitoi(parsedHand: ParsedHand): YakuCheckResult {
-        const koutsuCount = parsedHand.mentsuList.filter(mentsu => mentsu.type === "koutsu" || mentsu.type === "kantsu").length;
-        
-        return koutsuCount === 4 ? YAKU_LIST.TOITOIHOU : null;
-    }
+		return yakuList;
+	}
 
-    public checkSanankou(parsedHand: ParsedHand): YakuCheckResult {
-        const ankouCount = parsedHand.mentsuList.filter(mentsu => (mentsu.type === "koutsu" || mentsu.type === "kantsu") && mentsu.isAnkou).length;
+	public checkToitoi(parsedHand: ParsedHand): YakuCheckResult {
+		const koutsuCount = parsedHand.mentsuList.filter(
+			(mentsu) => mentsu.type === "koutsu" || mentsu.type === "kantsu",
+		).length;
 
-        return ankouCount === 3 ? YAKU_LIST.SANANKOU : null;    
-    }
+		return koutsuCount === 4 ? YAKU_LIST.TOITOIHOU : null;
+	}
 
-    public checkShousangen(parsedHand: ParsedHand): YakuCheckResult {
-        const janto = parsedHand.janto[0];
+	public checkSanankou(parsedHand: ParsedHand): YakuCheckResult {
+		const ankouCount = parsedHand.mentsuList.filter(
+			(mentsu) =>
+				(mentsu.type === "koutsu" || mentsu.type === "kantsu") &&
+				mentsu.isAnkou,
+		).length;
 
-        if (!SANGENPAI_SET.has(janto)) return null;
+		return ankouCount === 3 ? YAKU_LIST.SANANKOU : null;
+	}
 
-        const sangenKoutsuCount = parsedHand.mentsuList.filter(mentsu => {
-            const tile = mentsu.tiles[0];
-            return (
-                (mentsu.type === "koutsu" || mentsu.type === "kantsu") &&
-                SANGENPAI_SET.has(tile)
-            )
-        }).length;
+	public checkShousangen(parsedHand: ParsedHand): YakuCheckResult {
+		const janto = parsedHand.janto[0];
 
-        return sangenKoutsuCount === 2 ? YAKU_LIST.SHOUSANGEN : null;
-    }
+		if (!SANGENPAI_SET.has(janto)) return null;
+
+		const sangenKoutsuCount = parsedHand.mentsuList.filter((mentsu) => {
+			const tile = mentsu.tiles[0];
+			return (
+				(mentsu.type === "koutsu" || mentsu.type === "kantsu") &&
+				SANGENPAI_SET.has(tile)
+			);
+		}).length;
+
+		return sangenKoutsuCount === 2 ? YAKU_LIST.SHOUSANGEN : null;
+	}
 }

@@ -1,284 +1,338 @@
-import { type FuuroMeld, type MachiType, type TehaiCounts, type Tile } from "@/types";
-import type { Hand } from "@/logic/Hand/Hand";
-import { ParsedHand } from "@/logic/ParsedHand/ParsedHand";
-import { Mentsu } from "@/logic/Mentsu/Mentsu";
 import { YAOCHUHAI } from "@/const/TILE_TYPE";
+import type { Hand } from "@/logic/Hand/Hand";
+import { Mentsu } from "@/logic/Mentsu/Mentsu";
+import { ParsedHand } from "@/logic/ParsedHand/ParsedHand";
+import type { FuuroMeld, MachiType, TehaiCounts, Tile } from "@/types";
 
 type KokushiCheckResult = {
-    isKokushi: boolean;
-    is13MenMachi: boolean;
-}
+	isKokushi: boolean;
+	is13MenMachi: boolean;
+};
 
 type ChiitoitsuCheckResult = {
-    isChiitoitsu: boolean;
-    pairs?: Tile[][];
-}
+	isChiitoitsu: boolean;
+	pairs?: Tile[][];
+};
 
 type StandardCheckResult = {
-    mentsuList: Mentsu[];
-    janto: Tile[];
-}
+	mentsuList: Mentsu[];
+	janto: Tile[];
+};
 
 export class HandParser {
-    public parse(hand: Hand): ParsedHand | Error {
-        const agariHai = hand.agariHai;
-        
-        const allTileCounts = this.convertHandToCounts(hand.allTiles);
-        
-        const kokushiResult = this.checkKokushi(allTileCounts, agariHai);
-        if (kokushiResult.isKokushi) {
-            return ParsedHand.createKokushi(kokushiResult.is13MenMachi)
-        }
+	public parse(hand: Hand): ParsedHand | Error {
+		const agariHai = hand.agariHai;
 
-        const chiitoitsuResult = this.checkChiitoitsu(allTileCounts);
-        if (chiitoitsuResult.isChiitoitsu && chiitoitsuResult.pairs) {
-            return ParsedHand.createChiitoitsu(chiitoitsuResult.pairs);
-        }
+		const allTileCounts = this.convertHandToCounts(hand.allTiles);
 
-        const menzenCounts = new Map(allTileCounts);
-        for (const meld of hand.fuuro) {
-            for (const tile of meld.tiles) {
-                menzenCounts.set(tile, (menzenCounts.get(tile) ?? 0) - 1);
-            }
-        }
+		const kokushiResult = this.checkKokushi(allTileCounts, agariHai);
+		if (kokushiResult.isKokushi) {
+			return ParsedHand.createKokushi(kokushiResult.is13MenMachi);
+		}
 
-        const standardResult = this.checkStandard(menzenCounts, hand.fuuro);
-        if (standardResult !== null) {
-            const fuuroAsMentsu = hand.fuuro.map(meld => {
-                const type = meld.type === "chi"
-                    ? "shuntsu"
-                    : (meld.type === "ankan" || meld.type === "minkan" ? "kantsu" : "koutsu");
+		const chiitoitsuResult = this.checkChiitoitsu(allTileCounts);
+		if (chiitoitsuResult.isChiitoitsu && chiitoitsuResult.pairs) {
+			return ParsedHand.createChiitoitsu(chiitoitsuResult.pairs);
+		}
 
-                return new Mentsu(type, meld.tiles, meld.type === "ankan");
-            });
+		const menzenCounts = new Map(allTileCounts);
+		for (const meld of hand.fuuro) {
+			for (const tile of meld.tiles) {
+				menzenCounts.set(tile, (menzenCounts.get(tile) ?? 0) - 1);
+			}
+		}
 
-            const allMentsu = [...standardResult.mentsuList, ...fuuroAsMentsu];
+		const standardResult = this.checkStandard(menzenCounts, hand.fuuro);
+		if (standardResult !== null) {
+			const fuuroAsMentsu = hand.fuuro.map((meld) => {
+				const type =
+					meld.type === "chi"
+						? "shuntsu"
+						: meld.type === "ankan" || meld.type === "minkan"
+							? "kantsu"
+							: "koutsu";
 
-            allMentsu.sort((a, b) => {
-                if (a.tiles[0] < b.tiles[0]) return -1;
-                if (a.tiles[0] > b.tiles[0]) return 1;
-                return 0;
-            });
+				return new Mentsu(type, meld.tiles, meld.type === "ankan");
+			});
 
-            const machiType = this.determineMachiType(standardResult, hand.fuuro, agariHai)
+			const allMentsu = [...standardResult.mentsuList, ...fuuroAsMentsu];
 
-            return ParsedHand.createStandard(
-                allMentsu,
-                standardResult.janto,
-                machiType
-            );
-        }
+			allMentsu.sort((a, b) => {
+				if (a.tiles[0] < b.tiles[0]) return -1;
+				if (a.tiles[0] > b.tiles[0]) return 1;
+				return 0;
+			});
 
-        return new Error("アガリ形ではありません");
-    }
+			const machiType = this.determineMachiType(
+				standardResult,
+				hand.fuuro,
+				agariHai,
+			);
 
-    private convertHandToCounts(tehai: Tile[]): TehaiCounts {
-        const counts = new Map<Tile, number>();
-        for (const tile of tehai) {
-            counts.set(tile, (counts.get(tile) ?? 0) + 1);
-        }
-        return counts;
-    }
+			return ParsedHand.createStandard(
+				allMentsu,
+				standardResult.janto,
+				machiType,
+			);
+		}
 
-    private checkKokushi(allTileCounts: TehaiCounts, agariHai: Tile): KokushiCheckResult {
-        const kokushiTiles: Tile[] = [...YAOCHUHAI];
+		return new Error("アガリ形ではありません");
+	}
 
-        // Check if any tile not in kokushiTiles is present
-        const kokushiTileSet = new Set<Readonly<Tile>>(YAOCHUHAI);
-        for (const [tile, count] of allTileCounts.entries()) {
-            if (count > 0 && !kokushiTileSet.has(tile)) {
-                return { isKokushi: false, is13MenMachi: false };
-            }
-        }
+	private convertHandToCounts(tehai: Tile[]): TehaiCounts {
+		const counts = new Map<Tile, number>();
+		for (const tile of tehai) {
+			counts.set(tile, (counts.get(tile) ?? 0) + 1);
+		}
+		return counts;
+	}
 
-        let pairTile: Tile | null = null;
-        for (const tile of kokushiTiles) {
-            const count = allTileCounts.get(tile) ?? 0;
+	private checkKokushi(
+		allTileCounts: TehaiCounts,
+		agariHai: Tile,
+	): KokushiCheckResult {
+		const kokushiTiles: Tile[] = [...YAOCHUHAI];
 
-            if (count === 0) {
-                return { isKokushi: false, is13MenMachi: false };            
-            }
+		// Check if any tile not in kokushiTiles is present
+		const kokushiTileSet = new Set<Readonly<Tile>>(YAOCHUHAI);
+		for (const [tile, count] of allTileCounts.entries()) {
+			if (count > 0 && !kokushiTileSet.has(tile)) {
+				return { isKokushi: false, is13MenMachi: false };
+			}
+		}
 
-            if (count > 2) {
-                return { isKokushi: false, is13MenMachi: false };
-            }
+		let pairTile: Tile | null = null;
+		for (const tile of kokushiTiles) {
+			const count = allTileCounts.get(tile) ?? 0;
 
-            if (count === 2) {
-                if (pairTile !== null) {
-                    return { isKokushi: false, is13MenMachi: false };                
-                }
-                pairTile = tile;
-            }
-        }
+			if (count === 0) {
+				return { isKokushi: false, is13MenMachi: false };
+			}
 
-        if (pairTile === null) {
-            return { isKokushi: false, is13MenMachi: false };
-        }
+			if (count > 2) {
+				return { isKokushi: false, is13MenMachi: false };
+			}
 
-        const is13Men = (pairTile === agariHai);
-        
-        return { isKokushi: true, is13MenMachi: is13Men };
-    }
+			if (count === 2) {
+				if (pairTile !== null) {
+					return { isKokushi: false, is13MenMachi: false };
+				}
+				pairTile = tile;
+			}
+		}
 
-    private checkChiitoitsu(tehaiCounts: TehaiCounts): ChiitoitsuCheckResult {
-        let pairCount = 0;
-        const pairs: Tile[][] = [];
-        for (const [tile, count] of tehaiCounts.entries()) {
-            if (count === 0) {
-                continue;
-            }
+		if (pairTile === null) {
+			return { isKokushi: false, is13MenMachi: false };
+		}
 
-            if (count === 2) {
-                pairCount++;
-                pairs.push([tile, tile]);
-                continue;
-            }
-            
-            return { isChiitoitsu: false, pairs: undefined }
-        }
+		const is13Men = pairTile === agariHai;
 
-        return { isChiitoitsu: pairCount === 7, pairs };
-    }
+		return { isKokushi: true, is13MenMachi: is13Men };
+	}
 
-    private checkStandard(tehaiCounts: TehaiCounts, fuuroList: FuuroMeld[]): StandardCheckResult | null {
-        const jantoCandidates: Tile[] = [];        
+	private checkChiitoitsu(tehaiCounts: TehaiCounts): ChiitoitsuCheckResult {
+		let pairCount = 0;
+		const pairs: Tile[][] = [];
+		for (const [tile, count] of tehaiCounts.entries()) {
+			if (count === 0) {
+				continue;
+			}
 
-        for (const [tile, count] of tehaiCounts.entries()) {
-            if (count >= 2) {
-                jantoCandidates.push(tile);
-            }
-        }
+			if (count === 2) {
+				pairCount++;
+				pairs.push([tile, tile]);
+				continue;
+			}
 
-        for (const candidate of jantoCandidates) {
-            const countsCopy = new Map(tehaiCounts);
-            countsCopy.set(candidate, (countsCopy.get(candidate) ?? 0) - 2);
+			return { isChiitoitsu: false, pairs: undefined };
+		}
 
+		return { isChiitoitsu: pairCount === 7, pairs };
+	}
 
-            const mentsuResult = this.findMentsuRecursive(countsCopy, 4 - fuuroList.length);
+	private checkStandard(
+		tehaiCounts: TehaiCounts,
+		fuuroList: FuuroMeld[],
+	): StandardCheckResult | null {
+		const jantoCandidates: Tile[] = [];
 
-            if (mentsuResult !== null) {
-                return {
-                    mentsuList: mentsuResult,
-                    janto: [candidate, candidate]
-                };
-            }
-        }
+		for (const [tile, count] of tehaiCounts.entries()) {
+			if (count >= 2) {
+				jantoCandidates.push(tile);
+			}
+		}
 
-        return null;
-    }
+		for (const candidate of jantoCandidates) {
+			const countsCopy = new Map(tehaiCounts);
+			countsCopy.set(candidate, (countsCopy.get(candidate) ?? 0) - 2);
 
-    private findMentsuRecursive(tehaiCounts: TehaiCounts, mentsuNeeded: number): Mentsu[] | null {
-        // Base case: all mentsu found
-        if (mentsuNeeded === 0) {
-            for (const count of tehaiCounts.values()) {
-                if (count !== 0) {
-                    return null;
-                }
-            }
-            return [];
-        }
-        
-        // Find the first tile with a count greater than 0
-        let firstTile: Tile | null = null;
-        for (const [tile, count] of tehaiCounts.entries()) {
-            if (count > 0) {
-                firstTile = tile;
-                break;
-            }
-        }
-        if (!firstTile) {
-            return null;
-        }
+			const mentsuResult = this.findMentsuRecursive(
+				countsCopy,
+				4 - fuuroList.length,
+			);
 
-        // Try to form a mentsu
-        // Try to create kotsu
-        const koutsuCount = tehaiCounts.get(firstTile) ?? 0;
-        if (koutsuCount >= 3) {
-            tehaiCounts.set(firstTile, koutsuCount - 3);
-            const kotsu = new Mentsu("koutsu", [firstTile, firstTile, firstTile], true);
-            const result = this.findMentsuRecursive(tehaiCounts, mentsuNeeded - 1)
-            if (result !== null) {
-                return [kotsu, ...result];
-            }
-            // Backtrack
-            const countAfterTry = tehaiCounts.get(firstTile) ?? 0;            
-            tehaiCounts.set(firstTile, countAfterTry + 3);
-        }
-        // Try to create shuntsu        
-        const suit = firstTile.charAt(1);
-        if (suit === "m" || suit === "p" || suit === "s") {
-            const rank = parseInt(firstTile.charAt(0));
-            if (rank <= 7) {
-                const secondTile = `${rank + 1}${suit}` as Tile;
-                const thirdTile = `${rank + 2}${suit}` as Tile;
-                if (tehaiCounts.get(secondTile) !== undefined && tehaiCounts.get(thirdTile) !== undefined) {
-                    const secondCount = tehaiCounts.get(secondTile) ?? 0;
-                    const thirdCount = tehaiCounts.get(thirdTile) ?? 0;
-                    if ((tehaiCounts.get(firstTile) ?? 0) > 0 && secondCount > 0 && thirdCount > 0) {
-                        // Form a shuntsu
-                        tehaiCounts.set(firstTile, (tehaiCounts.get(firstTile) ?? 0) - 1);
-                        tehaiCounts.set(secondTile, secondCount - 1);
-                        tehaiCounts.set(thirdTile, thirdCount - 1);
-                        const result = this.findMentsuRecursive(tehaiCounts, mentsuNeeded - 1);
-                        if (result !== null) {
-                            return [new Mentsu("shuntsu", [firstTile, secondTile, thirdTile], true), ...result];
-                        }
-                        // Backtrack
-                        tehaiCounts.set(firstTile, (tehaiCounts.get(firstTile) ?? 0) + 1);
-                        tehaiCounts.set(secondTile, (tehaiCounts.get(secondTile) ?? 0) + 1);
-                        tehaiCounts.set(thirdTile, (tehaiCounts.get(thirdTile) ?? 0) + 1);
-                    }
-                }
-            }            
-        }
-        return null;
-    }
+			if (mentsuResult !== null) {
+				return {
+					mentsuList: mentsuResult,
+					janto: [candidate, candidate],
+				};
+			}
+		}
 
-    // Determine machi type based on mentsuList and janto
-    private determineMachiType(standardResult: StandardCheckResult, fuuroList: FuuroMeld[], agariHai: Tile): MachiType {
-        try {            
-            const allMentsu = [...standardResult.mentsuList];
-            for (const fuuro of fuuroList) {
-                allMentsu.push(new Mentsu(
-                    fuuro.type === "chi" ? "shuntsu" : (fuuro.tiles.length === 4 ? "kantsu" : "koutsu"),
-                    fuuro.tiles,
-                    fuuro.type === "ankan"
-                ));
-            }
-            // Check for tanki
-            const janto = standardResult.janto;
-            if (agariHai === janto[0]) {
-                return "tanki";
-            }
+		return null;
+	}
 
-            // Check for shanpon
-            const koutsuMentsu = allMentsu.filter(mentsu => mentsu.type === "koutsu" || mentsu.type === "kantsu");
-            const agariKoutsu = koutsuMentsu.find(mentsu => mentsu.tiles.includes(agariHai));
-            if (agariKoutsu) {
-                return "shanpon";
-            }
+	private findMentsuRecursive(
+		tehaiCounts: TehaiCounts,
+		mentsuNeeded: number,
+	): Mentsu[] | null {
+		// Base case: all mentsu found
+		if (mentsuNeeded === 0) {
+			for (const count of tehaiCounts.values()) {
+				if (count !== 0) {
+					return null;
+				}
+			}
+			return [];
+		}
 
-            // Logic for shuntsu
-            const shuntsuMentsu = allMentsu.filter(mentsu => mentsu.type === "shuntsu");
-            const agariShuntsu = shuntsuMentsu.find(mentsu => mentsu.tiles.includes(agariHai));
-            if (agariShuntsu === undefined) throw new Error("待ちタイプが正しくないです");
+		// Find the first tile with a count greater than 0
+		let firstTile: Tile | null = null;
+		for (const [tile, count] of tehaiCounts.entries()) {
+			if (count > 0) {
+				firstTile = tile;
+				break;
+			}
+		}
+		if (!firstTile) {
+			return null;
+		}
 
-            // Sublogic for determining where Shuntsu wins
+		// Try to form a mentsu
+		// Try to create kotsu
+		const koutsuCount = tehaiCounts.get(firstTile) ?? 0;
+		if (koutsuCount >= 3) {
+			tehaiCounts.set(firstTile, koutsuCount - 3);
+			const kotsu = new Mentsu(
+				"koutsu",
+				[firstTile, firstTile, firstTile],
+				true,
+			);
+			const result = this.findMentsuRecursive(tehaiCounts, mentsuNeeded - 1);
+			if (result !== null) {
+				return [kotsu, ...result];
+			}
+			// Backtrack
+			const countAfterTry = tehaiCounts.get(firstTile) ?? 0;
+			tehaiCounts.set(firstTile, countAfterTry + 3);
+		}
+		// Try to create shuntsu
+		const suit = firstTile.charAt(1);
+		if (suit === "m" || suit === "p" || suit === "s") {
+			const rank = parseInt(firstTile.charAt(0), 10);
+			if (rank <= 7) {
+				const secondTile = `${rank + 1}${suit}` as Tile;
+				const thirdTile = `${rank + 2}${suit}` as Tile;
+				if (
+					tehaiCounts.get(secondTile) !== undefined &&
+					tehaiCounts.get(thirdTile) !== undefined
+				) {
+					const secondCount = tehaiCounts.get(secondTile) ?? 0;
+					const thirdCount = tehaiCounts.get(thirdTile) ?? 0;
+					if (
+						(tehaiCounts.get(firstTile) ?? 0) > 0 &&
+						secondCount > 0 &&
+						thirdCount > 0
+					) {
+						// Form a shuntsu
+						tehaiCounts.set(firstTile, (tehaiCounts.get(firstTile) ?? 0) - 1);
+						tehaiCounts.set(secondTile, secondCount - 1);
+						tehaiCounts.set(thirdTile, thirdCount - 1);
+						const result = this.findMentsuRecursive(
+							tehaiCounts,
+							mentsuNeeded - 1,
+						);
+						if (result !== null) {
+							return [
+								new Mentsu("shuntsu", [firstTile, secondTile, thirdTile], true),
+								...result,
+							];
+						}
+						// Backtrack
+						tehaiCounts.set(firstTile, (tehaiCounts.get(firstTile) ?? 0) + 1);
+						tehaiCounts.set(secondTile, (tehaiCounts.get(secondTile) ?? 0) + 1);
+						tehaiCounts.set(thirdTile, (tehaiCounts.get(thirdTile) ?? 0) + 1);
+					}
+				}
+			}
+		}
+		return null;
+	}
 
-            // Check for kanchan
-            const agariNum = parseInt(agariHai.charAt(0));
-            const firstTile = agariShuntsu.tiles[0];
-            const firstNum = parseInt(firstTile.charAt(0));
-            if (agariNum === (firstNum + 1)) return "kanchan";
+	// Determine machi type based on mentsuList and janto
+	private determineMachiType(
+		standardResult: StandardCheckResult,
+		fuuroList: FuuroMeld[],
+		agariHai: Tile,
+	): MachiType {
+		try {
+			const allMentsu = [...standardResult.mentsuList];
+			for (const fuuro of fuuroList) {
+				allMentsu.push(
+					new Mentsu(
+						fuuro.type === "chi"
+							? "shuntsu"
+							: fuuro.tiles.length === 4
+								? "kantsu"
+								: "koutsu",
+						fuuro.tiles,
+						fuuro.type === "ankan",
+					),
+				);
+			}
+			// Check for tanki
+			const janto = standardResult.janto;
+			if (agariHai === janto[0]) {
+				return "tanki";
+			}
 
-            // Check for penchan
-            if (firstNum === 1 && agariNum === 3) return "penchan";
-            if (firstNum === 7 && agariNum === 7) return "penchan";
+			// Check for shanpon
+			const koutsuMentsu = allMentsu.filter(
+				(mentsu) => mentsu.type === "koutsu" || mentsu.type === "kantsu",
+			);
+			const agariKoutsu = koutsuMentsu.find((mentsu) =>
+				mentsu.tiles.includes(agariHai),
+			);
+			if (agariKoutsu) {
+				return "shanpon";
+			}
 
-            // Check for ryanmen
-            return "ryanmen";
-        } catch(e: unknown) {
-            throw new Error("待ちタイプが正しくないです");
-        }
-    }
+			// Logic for shuntsu
+			const shuntsuMentsu = allMentsu.filter(
+				(mentsu) => mentsu.type === "shuntsu",
+			);
+			const agariShuntsu = shuntsuMentsu.find((mentsu) =>
+				mentsu.tiles.includes(agariHai),
+			);
+			if (agariShuntsu === undefined)
+				throw new Error("待ちタイプが正しくないです");
+
+			// Sublogic for determining where Shuntsu wins
+
+			// Check for kanchan
+			const agariNum = parseInt(agariHai.charAt(0), 10);
+			const firstTile = agariShuntsu.tiles[0];
+			const firstNum = parseInt(firstTile.charAt(0), 10);
+			if (agariNum === firstNum + 1) return "kanchan";
+
+			// Check for penchan
+			if (firstNum === 1 && agariNum === 3) return "penchan";
+			if (firstNum === 7 && agariNum === 7) return "penchan";
+
+			// Check for ryanmen
+			return "ryanmen";
+		} catch (_: unknown) {
+			throw new Error("待ちタイプが正しくないです");
+		}
+	}
 }
