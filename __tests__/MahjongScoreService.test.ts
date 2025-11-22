@@ -1,6 +1,7 @@
 import type { PointResult } from "@/logic/PointCalculator/PointCalculator";
 import { MahjongScoreService } from "@/MahjongScoreService/MahjongScoreService";
 import type { CalculateRequestDto } from "@/types";
+import { TEST_CASES } from "@/utils/vitest/testData";
 import { describe, expect, it } from "vitest";
 
 describe('MahjongScoreService Integration Test', () => {
@@ -211,5 +212,29 @@ describe('MahjongScoreService Integration Test', () => {
     
     expect(result).toBeInstanceOf(Error);
     expect((result as Error).message).toBe('役がありません');
+  });
+});
+
+describe('一括検証テスト', () => {
+  const service = new MahjongScoreService();
+
+  TEST_CASES.forEach((testCase) => {
+    it(`統合テスト: ${testCase.name}`, () => {
+      const result = service.calculateScore(testCase.input);
+      
+      expect(result).not.toBeInstanceOf(Error);
+      const point = result as PointResult;
+
+      expect(point.total).toBe(testCase.expected.total);
+      if (testCase.expected.name) {
+        expect(point.name).toBe(testCase.expected.name);
+      }
+      if (testCase.expected.oya !== undefined) {
+        expect(point.oya).toBe(testCase.expected.oya);
+      }
+      if (testCase.expected.ko !== undefined) {
+        expect(point.ko).toBe(testCase.expected.ko);
+      }
+    });
   });
 });
