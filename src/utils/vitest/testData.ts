@@ -1,307 +1,547 @@
 import type { CalculateRequestDto } from "@/types";
 
 type TestCase = {
-  name: string;
-  input: CalculateRequestDto;
-  expected: {
-    total: number;
-    name: string; // "30符2翻" や "満貫" など
-    oya?: number; // ツモの場合
-    ko?: number;  // ツモの場合
-  };
+	name: string;
+	input: CalculateRequestDto;
+	expected: {
+		total: number;
+		name: string; // "30符2翻" や "満貫" など
+		oya?: number; // ツモの場合
+		ko?: number; // ツモの場合
+	};
 };
 
 export const TEST_CASES: TestCase[] = [
-  // ---------------------------------------------------------
-  // 1. 平和 (Pinfu) 系
-  // ---------------------------------------------------------
-  {
-    name: "子・ロン・立直・平和 (30符2翻)",
-    input: {
-      tehai: ["1m", "1m", "5p", "6p", "7p", "2s", "3s", "4s", "6s", "7s", "7s", "8s", "9s"],
-      agariHai: "5s",
-      agariType: "ron",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "nan", isRiichi: true, 
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 2000,
-      name: "30符2翻"
-    }
-  },
-  {
-    name: "親・ツモ・平和・ドラ1 (20符2翻)",
-    input: {
-      tehai: ["1m", "1m", "5p", "6p", "7p", "2s", "5s", "3s", "4s", "6s", "7s", "7s", "8s", "9s"],
-      agariHai: "5s",
-      agariType: "tsumo",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "ton", isRiichi: false,
-        dora: ["3p"],
-        uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 2100,
-      oya: 0,
-      ko: 700,
-      name: "20符2翻"
-    }
-  },
+	// ---------------------------------------------------------
+	// 1. 平和 (Pinfu) 系
+	// ---------------------------------------------------------
+	{
+		name: "子・ロン・立直・平和 (30符2翻)",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"5p",
+				"6p",
+				"7p",
+				"2s",
+				"3s",
+				"4s",
+				"6s",
+				"7s",
+				"7s",
+				"8s",
+				"9s",
+			],
+			agariHai: "5s",
+			agariType: "ron",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "nan",
+				isRiichi: true,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 2000,
+			name: "30符2翻",
+		},
+	},
+	{
+		name: "親・ツモ・平和・ドラ1 (20符2翻)",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"5p",
+				"6p",
+				"7p",
+				"2s",
+				"5s",
+				"3s",
+				"4s",
+				"6s",
+				"7s",
+				"7s",
+				"8s",
+				"9s",
+			],
+			agariHai: "5s",
+			agariType: "tsumo",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "ton",
+				isRiichi: false,
+				dora: ["3p"],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 2100,
+			oya: 0,
+			ko: 700,
+			name: "20符2翻",
+		},
+	},
 
-  // ---------------------------------------------------------
-  // 2. 七対子 (Chiitoitsu) 系
-  // ---------------------------------------------------------
-  {
-    name: "子・ロン・七対子・ドラ2 (25符2翻)",
-    input: {
-      tehai: ["1m", "1m", "5m", "5m", "9p", "9p", "2s", "2s", "6s", "6s", "8s", "8s", "ton"],
-      agariHai: "ton",
-      agariType: "ron",
-      fuuro: [],
-      status: {
-        bakaze: "nan", jikaze: "pei", isRiichi: false,
-        dora: ["4m"],
-        uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 6400,
-      name: "25符4翻"
-    }
-  },
-  {
-    name: "親・ロン・七対子 (25符2翻)",
-    input: {
-      tehai: ["1m", "1m", "2m", "2m",  "4m", "4m", "5m", "5m", "3p", "3p", "6s", "6s", "7s"],
-      agariHai: "7s",
-      agariType: "ron",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "ton", isRiichi: false,
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 2400,
-      ko: 0,
-      name: "25符2翻"
-    }
-  },
+	// ---------------------------------------------------------
+	// 2. 七対子 (Chiitoitsu) 系
+	// ---------------------------------------------------------
+	{
+		name: "子・ロン・七対子・ドラ2 (25符2翻)",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"5m",
+				"5m",
+				"9p",
+				"9p",
+				"2s",
+				"2s",
+				"6s",
+				"6s",
+				"8s",
+				"8s",
+				"ton",
+			],
+			agariHai: "ton",
+			agariType: "ron",
+			fuuro: [],
+			status: {
+				bakaze: "nan",
+				jikaze: "pei",
+				isRiichi: false,
+				dora: ["4m"],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 6400,
+			name: "25符4翻",
+		},
+	},
+	{
+		name: "親・ロン・七対子 (25符2翻)",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"2m",
+				"2m",
+				"4m",
+				"4m",
+				"5m",
+				"5m",
+				"3p",
+				"3p",
+				"6s",
+				"6s",
+				"7s",
+			],
+			agariHai: "7s",
+			agariType: "ron",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "ton",
+				isRiichi: false,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 2400,
+			ko: 0,
+			name: "25符2翻",
+		},
+	},
 
-  // ---------------------------------------------------------
-  // 3. 鳴き・役牌・トイトイ系
-  // ---------------------------------------------------------
-  {
-    name: "子・ロン・役牌(發)・ドラ2 (40符3翻) ※明刻あり",
-    input: {
-      tehai: ["1m", "1m", "7p", "8p", "9p", "2s", "3s", "4s", "9s", "9s"],
-      agariHai: "9s",
-      agariType: "ron",
-      fuuro: [
-        { type: "pon", tiles: ["hatsu", "hatsu", "hatsu"] }
-      ],
-      status: {
-        bakaze: "ton", jikaze: "nan", isRiichi: false,
-        dora: ["9m"],
-        uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 5200,      
-      name: "40符3翻"
-    }
-  },
-  {
-    name: "親・ツモ・対々和・三暗刻・白 (70符5翻) -> 満貫",
-    input: {
-      tehai: ["2m", "2m", "2m", "5p", "5p", "5p", "8s", "8s"],
-      agariHai: "8s",
-      agariType: "tsumo",
-      fuuro: [
-        { type: "pon", tiles: ["haku", "haku", "haku"] },
-        { type: "ankan", tiles: ["1s", "1s", "1s", "1s"] }
-      ],
-      status: {
-        bakaze: "ton", jikaze: "ton", isRiichi: false,
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 12000,
-      ko: 4000,
-      name: "満貫"
-    }
-  },
+	// ---------------------------------------------------------
+	// 3. 鳴き・役牌・トイトイ系
+	// ---------------------------------------------------------
+	{
+		name: "子・ロン・役牌(發)・ドラ2 (40符3翻) ※明刻あり",
+		input: {
+			tehai: ["1m", "1m", "7p", "8p", "9p", "2s", "3s", "4s", "9s", "9s"],
+			agariHai: "9s",
+			agariType: "ron",
+			fuuro: [{ type: "pon", tiles: ["hatsu", "hatsu", "hatsu"] }],
+			status: {
+				bakaze: "ton",
+				jikaze: "nan",
+				isRiichi: false,
+				dora: ["9m"],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 5200,
+			name: "40符3翻",
+		},
+	},
+	{
+		name: "親・ツモ・対々和・三暗刻・白 (70符5翻) -> 満貫",
+		input: {
+			tehai: ["2m", "2m", "2m", "5p", "5p", "5p", "8s", "8s"],
+			agariHai: "8s",
+			agariType: "tsumo",
+			fuuro: [
+				{ type: "pon", tiles: ["haku", "haku", "haku"] },
+				{ type: "ankan", tiles: ["1s", "1s", "1s", "1s"] },
+			],
+			status: {
+				bakaze: "ton",
+				jikaze: "ton",
+				isRiichi: false,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 12000,
+			ko: 4000,
+			name: "満貫",
+		},
+	},
 
-  // ---------------------------------------------------------
-  // 4. 高打点（跳満・倍満）系
-  // ---------------------------------------------------------
-  {
-    name: "子・ロン・清一色・一気通貫 (30符9翻) -> 倍満",
-    input: {
-      tehai: ["1m", "1m", "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "2m", "3m"],
-      agariHai: "4m",
-      agariType: "ron",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "nan", isRiichi: false,
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 16000,
-      name: "倍満"
-    }
-  },
+	// ---------------------------------------------------------
+	// 4. 高打点（跳満・倍満）系
+	// ---------------------------------------------------------
+	{
+		name: "子・ロン・清一色・一気通貫 (30符9翻) -> 倍満",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"1m",
+				"2m",
+				"3m",
+				"4m",
+				"5m",
+				"6m",
+				"7m",
+				"8m",
+				"9m",
+				"2m",
+				"3m",
+			],
+			agariHai: "4m",
+			agariType: "ron",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "nan",
+				isRiichi: false,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 16000,
+			name: "倍満",
+		},
+	},
 
-  // ---------------------------------------------------------
-  // 5. 符計算の細かい境界値 (ピンフ崩れなど)
-  // ---------------------------------------------------------
-  {
-    name: "子・ロン・タンヤオ・カンチャン待ち (40符1翻)",
-    input: {
-      tehai: ["2m", "3m", "4m", "5p", "6p", "7p", "2s", "2s", "6s", "8s", "3s", "3s", "3s"],
-      agariHai: "7s",
-      agariType: "ron",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "nan", isRiichi: false,
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 1300,
-      name: "40符1翻"
-    }
-  },
-  {
-    name: "親・ツモ・平和ツモなし(鳴き) (20符1翻) -> 30符1翻扱い",
-    input: {
-      tehai: ["2m", "3m", "4m", "5p", "6p", "7p", "2s", "3s", "4s", "8s", "8s"],
-      agariHai: "2m",
-      agariType: "tsumo",
-      fuuro: [
-        { type: "chi", tiles: ["5s", "6s", "7s"] }
-      ],
-      status: {
-        bakaze: "ton", jikaze: "ton", isRiichi: false,
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false
-      }
-    },
-    expected: {
-      total: 1500,
-      ko: 500,
-      name: "30符1翻"
-    }
-  },
-  // ---------------------------------------------------------
-  // 6. ボーナス（本場とリーチ棒）の計算
-  // ---------------------------------------------------------
-  {
-    name: "親・ツモ・立直・平和 (20符3翻) 1本場",
-    input: {
-      tehai: ["1m", "1m", "5p", "6p", "7p", "2s", "3s", "4s", "5s", "6s", "7s", "7s", "8s", "9s"],
-      agariHai: "5s",
-      agariType: "tsumo",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "ton", isRiichi: true, 
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false, honba: 1
-      }
-    },
-    expected: {
-      total: 4200,
-      ko: 1400,
-      name: "20符3翻"
-    }
-  },
-  {
-    name: "子・ツモ・立直・平和 (20符3翻) 1本場",
-    input: {
-      tehai: ["1m", "1m", "5p", "6p", "7p", "2s", "3s", "4s", "5s", "6s", "7s", "7s", "8s", "9s"],
-      agariHai: "5s",
-      agariType: "tsumo",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "nan", isRiichi: true, 
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false, honba: 1
-      }
-    },
-    expected: {
-      total: 3000,
-      ko: 800,
-      oya: 1400,
-      name: "20符3翻"
-    }
-  },
-  {
-    name: "子・ロン・立直・平和 (30符2翻) 1本場",
-    input: {
-      tehai: ["1m", "1m", "5p", "6p", "7p", "2s", "3s", "4s", "6s", "7s", "7s", "8s", "9s"],
-      agariHai: "5s",
-      agariType: "ron",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "nan", isRiichi: true, 
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false, honba: 1
-      }
-    },
-    expected: {
-      total: 2300,
-      name: "30符2翻"
-    }
-  },
-  {
-    name: "子・ロン・立直・平和 (30符2翻) リーチ棒1",
-    input: {
-      tehai: ["1m", "1m", "5p", "6p", "7p", "2s", "3s", "4s", "6s", "7s", "7s", "8s", "9s"],
-      agariHai: "5s",
-      agariType: "ron",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "nan", isRiichi: true, 
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false, riichiSticks: 1
-      }
-    },
-    expected: {
-      total: 3000,
-      name: "30符2翻"
-    }
-  },
-  {
-    name: "子・ロン・立直・平和 (30符2翻) 2本場 リーチ棒1",
-    input: {
-      tehai: ["1m", "1m", "5p", "6p", "7p", "2s", "3s", "4s", "6s", "7s", "7s", "8s", "9s"],
-      agariHai: "5s",
-      agariType: "ron",
-      fuuro: [],
-      status: {
-        bakaze: "ton", jikaze: "nan", isRiichi: true, 
-        dora: [], uradora: [],
-        isIppatsu: false, isHaitei: false, isRinshan: false, isChankan: false, honba: 2, riichiSticks: 1
-      }
-    },
-    expected: {
-      total: 3600,
-      name: "30符2翻"
-    }
-  },
+	// ---------------------------------------------------------
+	// 5. 符計算の細かい境界値 (ピンフ崩れなど)
+	// ---------------------------------------------------------
+	{
+		name: "子・ロン・タンヤオ・カンチャン待ち (40符1翻)",
+		input: {
+			tehai: [
+				"2m",
+				"3m",
+				"4m",
+				"5p",
+				"6p",
+				"7p",
+				"2s",
+				"2s",
+				"6s",
+				"8s",
+				"3s",
+				"3s",
+				"3s",
+			],
+			agariHai: "7s",
+			agariType: "ron",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "nan",
+				isRiichi: false,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 1300,
+			name: "40符1翻",
+		},
+	},
+	{
+		name: "親・ツモ・平和ツモなし(鳴き) (20符1翻) -> 30符1翻扱い",
+		input: {
+			tehai: ["2m", "3m", "4m", "5p", "6p", "7p", "2s", "3s", "4s", "8s", "8s"],
+			agariHai: "2m",
+			agariType: "tsumo",
+			fuuro: [{ type: "chi", tiles: ["5s", "6s", "7s"] }],
+			status: {
+				bakaze: "ton",
+				jikaze: "ton",
+				isRiichi: false,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+			},
+		},
+		expected: {
+			total: 1500,
+			ko: 500,
+			name: "30符1翻",
+		},
+	},
+	// ---------------------------------------------------------
+	// 6. ボーナス（本場とリーチ棒）の計算
+	// ---------------------------------------------------------
+	{
+		name: "親・ツモ・立直・平和 (20符3翻) 1本場",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"5p",
+				"6p",
+				"7p",
+				"2s",
+				"3s",
+				"4s",
+				"5s",
+				"6s",
+				"7s",
+				"7s",
+				"8s",
+				"9s",
+			],
+			agariHai: "5s",
+			agariType: "tsumo",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "ton",
+				isRiichi: true,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+				honba: 1,
+			},
+		},
+		expected: {
+			total: 4200,
+			ko: 1400,
+			name: "20符3翻",
+		},
+	},
+	{
+		name: "子・ツモ・立直・平和 (20符3翻) 1本場",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"5p",
+				"6p",
+				"7p",
+				"2s",
+				"3s",
+				"4s",
+				"5s",
+				"6s",
+				"7s",
+				"7s",
+				"8s",
+				"9s",
+			],
+			agariHai: "5s",
+			agariType: "tsumo",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "nan",
+				isRiichi: true,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+				honba: 1,
+			},
+		},
+		expected: {
+			total: 3000,
+			ko: 800,
+			oya: 1400,
+			name: "20符3翻",
+		},
+	},
+	{
+		name: "子・ロン・立直・平和 (30符2翻) 1本場",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"5p",
+				"6p",
+				"7p",
+				"2s",
+				"3s",
+				"4s",
+				"6s",
+				"7s",
+				"7s",
+				"8s",
+				"9s",
+			],
+			agariHai: "5s",
+			agariType: "ron",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "nan",
+				isRiichi: true,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+				honba: 1,
+			},
+		},
+		expected: {
+			total: 2300,
+			name: "30符2翻",
+		},
+	},
+	{
+		name: "子・ロン・立直・平和 (30符2翻) リーチ棒1",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"5p",
+				"6p",
+				"7p",
+				"2s",
+				"3s",
+				"4s",
+				"6s",
+				"7s",
+				"7s",
+				"8s",
+				"9s",
+			],
+			agariHai: "5s",
+			agariType: "ron",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "nan",
+				isRiichi: true,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+				riichiSticks: 1,
+			},
+		},
+		expected: {
+			total: 3000,
+			name: "30符2翻",
+		},
+	},
+	{
+		name: "子・ロン・立直・平和 (30符2翻) 2本場 リーチ棒1",
+		input: {
+			tehai: [
+				"1m",
+				"1m",
+				"5p",
+				"6p",
+				"7p",
+				"2s",
+				"3s",
+				"4s",
+				"6s",
+				"7s",
+				"7s",
+				"8s",
+				"9s",
+			],
+			agariHai: "5s",
+			agariType: "ron",
+			fuuro: [],
+			status: {
+				bakaze: "ton",
+				jikaze: "nan",
+				isRiichi: true,
+				dora: [],
+				uradora: [],
+				isIppatsu: false,
+				isHaitei: false,
+				isRinshan: false,
+				isChankan: false,
+				honba: 2,
+				riichiSticks: 1,
+			},
+		},
+		expected: {
+			total: 3600,
+			name: "30符2翻",
+		},
+	},
 ];

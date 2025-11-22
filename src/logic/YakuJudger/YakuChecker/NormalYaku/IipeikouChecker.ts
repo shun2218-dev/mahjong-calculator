@@ -5,17 +5,19 @@ import type { YakuCheckResult } from "@/types";
 import { countShuntsu } from "@/utils/helper";
 
 export class IipeikouChecker {
-    public check(parsedHand: ParsedHand, hand: Hand): YakuCheckResult {
-        if (!hand.isMenzen) return null;
+	public check(parsedHand: ParsedHand, hand: Hand): YakuCheckResult {
+		if (!hand.isMenzen) return null;
 
-        if (parsedHand.agariForm !== "standard") return null;
+		if (parsedHand.agariForm !== "standard") return null;
 
-        const shuntsuCounts = countShuntsu(parsedHand.mentsuList);
+		const shuntsuCounts = countShuntsu(parsedHand.mentsuList);
 
-        const pairsCount = Array.from(shuntsuCounts.values()).filter(count => count >= 2).length;
+		const pairsCount = Array.from(shuntsuCounts.values()).filter(
+			(count) => count >= 2,
+		).length;
 
-        if (pairsCount >= 1) return YAKU_LIST.IIPEIKOU;
+		if (pairsCount >= 1) return YAKU_LIST.IIPEIKOU;
 
-        return null;
-    }
+		return null;
+	}
 }
