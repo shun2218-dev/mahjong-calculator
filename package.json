@@ -1,11 +1,18 @@
 {
-	"name": "mahjong",
-	"private": true,
-	"version": "0.0.0",
+	"name": "mahjong-calculator",
+	"version": "0.1.5",
 	"type": "module",
+	"main": "dist/mahjong-score-service.cjs.js",
+	"module": "dist/mahjong-score-service.es.js",
+	"types": "dist/types/main.d.ts",
+  "files": [
+    "dist"
+  ],
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build",
+		"clean:types": "rimraf dist/types",
+		"build": "npm run clean:types && npm run build:types && vite build",
+		"build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly && tsc-alias -p tsconfig.build.json",
 		"preview": "vite preview",
 		"test": "vitest --ui",
 		"format": "biome lint --write .",
@@ -14,8 +21,11 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.7",
+		"@types/node": "^24.10.1",
 		"@vitest/coverage-v8": "^4.0.8",
 		"@vitest/ui": "^4.0.8",
+		"rimraf": "^6.1.2",
+		"tsc-alias": "^1.8.16",
 		"typescript": "~5.9.3",
 		"vite": "^7.2.2",
 		"vitest": "^4.0.8"
