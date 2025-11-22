@@ -4,57 +4,61 @@ import type { Suit } from "@/types";
 import { isJihai } from "@/utils/helper";
 
 export class SanshokuChecker {
-    public checkDoujyun(parsedHand: ParsedHand) {
-        const shuntsuList = parsedHand.mentsuList.filter(mentsu => mentsu.type === "shuntsu");
-        if (shuntsuList.length < 3) return null;
-        
-        const shuntsuMap = new Map<string, Set<string>>();
+	public checkDoujyun(parsedHand: ParsedHand) {
+		const shuntsuList = parsedHand.mentsuList.filter(
+			(mentsu) => mentsu.type === "shuntsu",
+		);
+		if (shuntsuList.length < 3) return null;
 
-        for (const shuntsu of shuntsuList) {
-            const tile = shuntsu.tiles[0]
-            const rank = tile.charAt(0);
-            const suit = tile.charAt(1) as Suit;
+		const shuntsuMap = new Map<string, Set<string>>();
 
-            if (!shuntsuMap.has(rank)) {
-                shuntsuMap.set(rank, new Set());
-            }
-            shuntsuMap.get(rank)!.add(suit);
-        }
+		for (const shuntsu of shuntsuList) {
+			const tile = shuntsu.tiles[0];
+			const rank = tile.charAt(0);
+			const suit = tile.charAt(1) as Suit;
 
-        for (const suits of shuntsuMap.values()) {
-            if (suits.size === 3) {
-                return YAKU_LIST.SANSHOKUDOUJYUN;
-            }            
-        }
+			if (!shuntsuMap.has(rank)) {
+				shuntsuMap.set(rank, new Set());
+			}
+			shuntsuMap.get(rank)?.add(suit);
+		}
 
-        return null;
-    }
+		for (const suits of shuntsuMap.values()) {
+			if (suits.size === 3) {
+				return YAKU_LIST.SANSHOKUDOUJYUN;
+			}
+		}
 
-    public checkDoukou(parsedHand: ParsedHand) {
-        const koutsuList = parsedHand.mentsuList.filter(mentsu => (mentsu.type === "koutsu" || mentsu.type === "kantsu"));
-        if (koutsuList.length < 3) return null;
-        
-        const koutsuMap = new Map<string, Set<string>>();
+		return null;
+	}
 
-        for (const koutsu of koutsuList) {
-            const tile = koutsu.tiles[0];
-            if (isJihai(tile)) continue;
+	public checkDoukou(parsedHand: ParsedHand) {
+		const koutsuList = parsedHand.mentsuList.filter(
+			(mentsu) => mentsu.type === "koutsu" || mentsu.type === "kantsu",
+		);
+		if (koutsuList.length < 3) return null;
 
-            const rank = tile.charAt(0);
-            const suit = tile.charAt(1) as Suit;            
+		const koutsuMap = new Map<string, Set<string>>();
 
-            if (!koutsuMap.has(rank)) {
-                koutsuMap.set(rank, new Set());
-            }
-            koutsuMap.get(rank)!.add(suit);
-        }
+		for (const koutsu of koutsuList) {
+			const tile = koutsu.tiles[0];
+			if (isJihai(tile)) continue;
 
-        for (const suits of koutsuMap.values()) {
-            if (suits.size === 3) {
-                return YAKU_LIST.SANSHOKUDOUKOU;
-            }            
-        }
+			const rank = tile.charAt(0);
+			const suit = tile.charAt(1) as Suit;
 
-        return null;
-    }
+			if (!koutsuMap.has(rank)) {
+				koutsuMap.set(rank, new Set());
+			}
+			koutsuMap.get(rank)?.add(suit);
+		}
+
+		for (const suits of koutsuMap.values()) {
+			if (suits.size === 3) {
+				return YAKU_LIST.SANSHOKUDOUKOU;
+			}
+		}
+
+		return null;
+	}
 }

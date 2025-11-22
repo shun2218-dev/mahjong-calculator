@@ -4,14 +4,14 @@ import type { YakuCheckResult } from "@/types";
 import { isKoutsuOf } from "@/utils/helper";
 
 export class DaisangenChecker {
-    public check(parsedHand: ParsedHand): YakuCheckResult {
-        if (parsedHand.agariForm !== "standard") return null;
+	public check(parsedHand: ParsedHand): YakuCheckResult {
+		if (parsedHand.agariForm !== "standard") return null;
 
-        const allMentsu = parsedHand.mentsuList;
-        const hasHaku = allMentsu.some(mentsu => isKoutsuOf(mentsu, "haku"));
-        const hasHatsu = allMentsu.some(mentsu => isKoutsuOf(mentsu, "hatsu"));
-        const hasChun = allMentsu.some(mentsu => isKoutsuOf(mentsu, "chun"));
+		const allMentsu = parsedHand.mentsuList;
+		const hasHaku = allMentsu.some((mentsu) => isKoutsuOf(mentsu, "haku"));
+		const hasHatsu = allMentsu.some((mentsu) => isKoutsuOf(mentsu, "hatsu"));
+		const hasChun = allMentsu.some((mentsu) => isKoutsuOf(mentsu, "chun"));
 
-        return (hasHaku && hasHatsu && hasChun) ? YAKU_LIST.DAISANGEN : null;
-    }
+		return hasHaku && hasHatsu && hasChun ? YAKU_LIST.DAISANGEN : null;
+	}
 }

@@ -1,13 +1,20 @@
-import type { AKADORA, KAZEHAI, MANZU, PINZU, SANGENPAI, SOUZU } from "@/const/TILE_TYPE";
+import type {
+	AKADORA,
+	KAZEHAI,
+	MANZU,
+	PINZU,
+	SANGENPAI,
+	SOUZU,
+} from "@/const/TILE_TYPE";
 
 export type Suit = "m" | "p" | "s";
 
-export type Souzu = typeof SOUZU[number];
-export type Pinzu = typeof PINZU[number];
-export type Manzu = typeof MANZU[number];
-export type Akadora = typeof AKADORA[number];
-export type Kazehai = typeof KAZEHAI[number];
-export type Sangenpai = typeof SANGENPAI[number];
+export type Souzu = (typeof SOUZU)[number];
+export type Pinzu = (typeof PINZU)[number];
+export type Manzu = (typeof MANZU)[number];
+export type Akadora = (typeof AKADORA)[number];
+export type Kazehai = (typeof KAZEHAI)[number];
+export type Sangenpai = (typeof SANGENPAI)[number];
 export type Jihai = Kazehai | Sangenpai;
 
 export type Tile = Manzu | Pinzu | Akadora | Souzu | Jihai;
@@ -19,61 +26,61 @@ export type AgariForm = "standard" | "chiitoitsu" | "kokushi";
 export type MentsuType = "shuntsu" | "koutsu" | "kantsu";
 
 export interface FuuroMeld {
-    type: FuuroType;
-    tiles: Tile[];
+	type: FuuroType;
+	tiles: Tile[];
 }
 
 export interface GameStatus {
-    /** 場風 */
-    bakaze: Kazehai;
+	/** 場風 */
+	bakaze: Kazehai;
 
-    /** 自風 */
-    jikaze: Kazehai;
+	/** 自風 */
+	jikaze: Kazehai;
 
-    /** ドラ */
-    dora: Tile[];
+	/** ドラ */
+	dora: Tile[];
 
-    /** 裏ドラ */
-    uradora: Tile[];
+	/** 裏ドラ */
+	uradora: Tile[];
 
-    /** 本場 */
-    honba?: number;
+	/** 本場 */
+	honba?: number;
 
-    /** リーチ棒 */
-    riichiSticks?: number;
+	/** リーチ棒 */
+	riichiSticks?: number;
 
-    // --- 特殊役フラグ ---
-    isRiichi?: boolean;
-    isIppatsu?: boolean;
-    isHaitei?: boolean;
-    isRinshan?: boolean;
-    isChankan?: boolean;
-    isDoubleRiichi?: boolean;
-    isTenhou?: boolean;
-    isChiihou?: boolean;
+	// --- 特殊役フラグ ---
+	isRiichi?: boolean;
+	isIppatsu?: boolean;
+	isHaitei?: boolean;
+	isRinshan?: boolean;
+	isChankan?: boolean;
+	isDoubleRiichi?: boolean;
+	isTenhou?: boolean;
+	isChiihou?: boolean;
 }
 
 export interface CalculateRequestDto {
-    tehai: Tile[];
-    fuuro: FuuroMeld[];
-    agariHai: Tile;
-    agariType: AgariType;
-    status: GameStatus;
+	tehai: Tile[];
+	fuuro: FuuroMeld[];
+	agariHai: Tile;
+	agariType: AgariType;
+	status: GameStatus;
 }
 
 export type TehaiCounts = Map<Tile, number>;
 
 export interface Yaku {
-    id: string;
-    name: string;
-    han: number;
-    hanNaki: number;
-    isYakuman: boolean;
+	id: string;
+	name: string;
+	han: number;
+	hanNaki: number;
+	isYakuman: boolean;
 }
 
-export type YakuCheckResult = Yaku | null
+export type YakuCheckResult = Yaku | null;
 
 export type ScoreTier = {
-    name: string;
-    kihonten: number;
-}
+	name: string;
+	kihonten: number;
+};
