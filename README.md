@@ -43,9 +43,8 @@ TypeScriptで構築された、麻雀の点数計算（符計算・翻計算）�
 
 アガリ情報をJSON形式で送信し、計算された点数結果を受け取ります。
 
----
-
 ### 📥 入力 (Request) の例
+---
 
 **`CalculateRequestDto`** 型のJSONデータです。
 （例：メンゼン・ピンフ・ツモ・ドラ1 の手）
@@ -90,3 +89,6 @@ PointResult 型のJSONデータが返されます。 （上記インプットに
   "name": "20符3翻"
 }
 ```
+License
+---
+mahjong-calculator is MIT [licensed](LICENSE.md).
